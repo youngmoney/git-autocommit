@@ -14,8 +14,8 @@ function commit_directory() {
     add="$(get_setting add '*')"
 
     if [ "$every" != "" ]; then
-        git add --all $add
-        git commit -a -m "autocommit `date`" -q
+        git add --all $add > /dev/null 2>/dev/null
+        git commit -a -m "autocommit `date`" -q > /dev/null
     fi
 }
 
