@@ -13,7 +13,6 @@ function commit_directory() {
     every="$(get_setting every)"
     add="$(get_setting add '*')"
 
-    commited=""
     if [ "$every" != "" ]; then
         git add --all $add
         git commit -a -m "autocommit `date`" -q
@@ -23,6 +22,17 @@ function commit_directory() {
 function dry_run() {
     every="$(get_setting every)"
     if [ "$every" != "" ] && [ "$(git status -s)" != "" ]; then
+        pwd
+    fi
+}
+
+function list() {
+    every="$(get_setting every)"
+    add="$(get_setting add '*')"
+
+    if [ "$every" != "" ]; then
+        echo "$(pwd) - enabled (add: $add)"
+    else
         pwd
     fi
 }
@@ -45,7 +55,7 @@ if [ "$1" == "commit" ]; then
     exit
 fi
 if [ "$1" == "list" ]; then
-    for_repo pwd
+    for_repo list
     exit
 fi
 if [ "$1" == "dry-run" ]; then
