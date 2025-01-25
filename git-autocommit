@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+function get_setting() {
+    value="$(git config autocommit."$1")"
+    if [ "$value" == "" ]; then
+        shift
+        echo "$@"
+    fi
+    echo "$value"
+}
+
+function commit_directory() {
+    every="$(get_setting every)"
+    add="$(get_setting add '*')"
+
+    commited=""
+    if [ "$every" != "" ]; then
+        git add --all $add
+        git commit -a -m "autocommit `date`" -q
+    fi
+}
+
+function dry_run() {
+    every="$(get_setting every)"
+    if [ "$every" != "" ] && [ "$(git status -s)" != "" ]; then
+        pwd
+    fi
+}
+
+function for_repo() {
+    current_dir="$(pwd)"
+    cd "$current_dir"
+    find . -name ".git" -print0 | while IFS= read -r -d $'\0' repo; do
+        cd "$current_dir"
+        if [ -d "$repo" ]; then
+            cd "$repo/.."
+            $1
+        fi
+    done;
+    cd "$current_dir"
+}
+
+if [ "$1" == "commit" ]; then
+    for_repo commit_directory
+    exit
+fi
+if [ "$1" == "list" ]; then
+    for_repo pwd
+    exit
+fi
+if [ "$1" == "dry-run" ]; then
+    for_repo dry_run
+    exit
+fi
+
+echo "git autocommit [list, commit, dry-run]"
+echo
+echo "git config --add autocommit.every <value>: the interval is ignored for now"
+echo "git config --add autocommit.add <value>: files to automatically add, '*' by default"
+exit 1
