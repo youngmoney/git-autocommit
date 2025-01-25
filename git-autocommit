@@ -50,6 +50,10 @@ function for_repo() {
     cd "$current_dir"
 }
 
+if [ -d "$2" ]; then
+    cd "$2"
+fi
+
 if [ "$1" == "commit" ]; then
     for_repo commit_directory
     exit
@@ -63,7 +67,9 @@ if [ "$1" == "dry-run" ]; then
     exit
 fi
 
-echo "git autocommit [list, commit, dry-run]"
+echo "git autocommit <command> [directory]"
+echo
+echo "command: list, commit, dry-run"
 echo
 echo "git config --add autocommit.every <value>: the interval is ignored for now"
 echo "git config --add autocommit.add <value>: files to automatically add, '*' by default"
